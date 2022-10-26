@@ -17,9 +17,8 @@ import java.net.UnknownHostException;
 public class StoryController {
 
     @GetMapping("/connect")
-    public SseEmitter connect(HttpServletRequest request, HttpServletResponse response) {
+    public SseEmitter connect(HttpServletRequest request) {
         String id =request.getSession().getId();
-
         return SSEUtils.connect(id);
     }
 
