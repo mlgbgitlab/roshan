@@ -3,7 +3,6 @@ package com.dotastory.roshan.utils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -85,14 +84,13 @@ public class SSEUtils {
 
     public static boolean sendMessageByGiveNoticeAll(String userId, String message) {
         if (sseEmitterMap.containsKey(userId)) {
-            try {
                for(String key: sseEmitterMap.keySet()){
+                   try {
                        sseEmitterMap.get(key).send(message);
+                   } catch (IOException e) {
+                       logger.error("用户:{}, 通知消息发送失败:{}", userId, e.getMessage());
+                   }
                }
-            } catch (IOException e) {
-                logger.error("用户:{}, 通知消息发送失败:{}", userId, e.getMessage());
-                return false;
-            }
         } else {
             logger.error("用户{}关闭链接，进度同步终止", userId);
             return false;

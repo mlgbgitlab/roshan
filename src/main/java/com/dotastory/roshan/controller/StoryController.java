@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -16,14 +17,15 @@ import java.net.UnknownHostException;
 public class StoryController {
 
     @GetMapping("/connect")
-    public SseEmitter connect(HttpServletRequest request) {
-        String id =request.getRequestedSessionId();
+    public SseEmitter connect(HttpServletRequest request, HttpServletResponse response) {
+        String id =request.getSession().getId();
+
         return SSEUtils.connect(id);
     }
 
     @PostMapping("/send/story")
     public void sendMessage(HttpServletRequest request,String story) {
-        String id = request.getRequestedSessionId();
+        String id = request.getSession().getId();
         SSEUtils.sendMessageByGiveNoticeAll(id, story);
     }
 
