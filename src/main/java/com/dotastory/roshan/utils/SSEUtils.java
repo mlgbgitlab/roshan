@@ -27,6 +27,7 @@ public class SSEUtils {
         try {
             sseEmitter.onCompletion(completionCallBack(userId));
             sseEmitter.onTimeout(timeOutCallBack(userId));
+            sseEmitter.send(userId);
             sseEmitterMap.put(userId, sseEmitter);
             ssecount.getAndIncrement();
         } catch (Exception e) {

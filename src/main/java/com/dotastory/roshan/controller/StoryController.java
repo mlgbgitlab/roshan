@@ -1,6 +1,9 @@
 package com.dotastory.roshan.controller;
 
 import com.dotastory.roshan.utils.SSEUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -23,9 +27,10 @@ public class StoryController {
     }
 
     @PostMapping("/send/story")
-    public void sendMessage(HttpServletRequest request,String story) {
-        String id = request.getSession().getId();
-        SSEUtils.sendMessageByGiveNoticeAll(id, story);
+    public void sendMessage(String story,String userId) {
+        if(StringUtils.isNotBlank(userId)) {
+            SSEUtils.sendMessageByGiveNoticeAll(userId, story);
+        }
     }
 
     private String getIpAddress(HttpServletRequest request) {
