@@ -27,9 +27,13 @@ public class StoryController {
     }
 
     @PostMapping("/send/story")
-    public void sendMessage(String story,String userId) {
+    public void sendMessage(HttpServletRequest request,String story,String userId) {
         if(StringUtils.isNotBlank(userId)) {
             SSEUtils.sendMessageByGiveNoticeAll(userId, story);
+        }else {
+          if(request.getSession()!=null&&StringUtils.isNotBlank(request.getSession().getId())){
+              SSEUtils.sendMessageByGiveNoticeAll(request.getSession().getId(), story);
+          }
         }
     }
 

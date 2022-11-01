@@ -2,7 +2,6 @@ package com.dotastory.roshan.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -20,7 +19,7 @@ public class SSEUtils {
 
     public static SseEmitter connect(String userId) {
         //设置超时时间，0表示不过期，默认是30秒，超过时间未完成会抛出异常
-        if(sseEmitterMap.containsKey(userId)){
+        if (sseEmitterMap.containsKey(userId)) {
             return sseEmitterMap.get(userId);
         }
         SseEmitter sseEmitter = new SseEmitter(0L);
@@ -34,7 +33,6 @@ public class SSEUtils {
             logger.info("USERID：{}——SSE ERROR:{}", userId, e);
             removeUser(userId);
         }
-
         logger.info("创建链接:{}", userId);
         return sseEmitter;
     }
@@ -70,8 +68,11 @@ public class SSEUtils {
 
     public static boolean sendMessage(String userId, String message) {
         if (sseEmitterMap.containsKey(userId)) {
+            sseEmitterMap.remove(userId);
+            SseEmitter sseEmitter = new SseEmitter(0L);
+            sseEmitterMap.put(userId, sseEmitter);
             try {
-                sseEmitterMap.get(userId).send(message);
+                sseEmitter.send(message);
             } catch (IOException e) {
                 logger.error("发给用户:{}, 消息发送失败:{}", userId, e.getMessage());
                 return false;
@@ -85,13 +86,13 @@ public class SSEUtils {
 
     public static boolean sendMessageByGiveNoticeAll(String userId, String message) {
         if (sseEmitterMap.containsKey(userId)) {
-               for(String key: sseEmitterMap.keySet()){
-                   try {
-                       sseEmitterMap.get(key).send(message);
-                   } catch (IOException e) {
-                       logger.error("用户:{}, 通知消息发送失败:{}", userId, e.getMessage());
-                   }
-               }
+            for (String key : sseEmitterMap.keySet()) {
+                try {
+                    sseEmitterMap.get(key).send(message);
+                } catch (IOException e) {
+                    logger.error("用户:{}, 通知消息发送失败:{}", userId, e.getMessage());
+                }
+            }
         } else {
             logger.error("用户{}关闭链接，进度同步终止", userId);
             return false;
